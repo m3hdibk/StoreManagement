@@ -39,4 +39,39 @@ public class StockUtils {
                     .orElse(null);
         }
     }
+
+    public enum PaymentType {
+        CASH(1, "Cash"),
+        CREDIT(2, "Credit");
+
+
+        private final int id;
+        private final String name;
+
+        PaymentType(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static PaymentType getById(int id) {
+            return Arrays.stream(PaymentType.values())
+                    .filter(paymentType -> id == paymentType.id)
+                    .findFirst()
+                    .orElse(null);
+        }
+        public static PaymentType getByName(String name) {
+            return Arrays.stream(PaymentType.values())
+                    .filter(paymentType -> name.equalsIgnoreCase(paymentType.name))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
 }

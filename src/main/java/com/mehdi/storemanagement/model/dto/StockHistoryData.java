@@ -34,7 +34,9 @@ public class StockHistoryData implements Serializable {
         StockHistory stockHistory = new StockHistory();
         stockHistory.setId(id);
         stockHistory.setStock(stock.convertToEntity());
-        stockHistory.setLocation(location.convertToEntity());
+        if (location != null) {
+            stockHistory.setLocation(location.convertToEntity());
+        }
         stockHistory.setQuantity(quantity);
         stockHistory.setTransactionType(transactionType);
         stockHistory.setComment(comment);

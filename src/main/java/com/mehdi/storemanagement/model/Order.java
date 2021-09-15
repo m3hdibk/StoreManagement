@@ -8,8 +8,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
-@Entity(name = "order")
+@Entity(name = "orders")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -29,8 +30,8 @@ public class Order implements Serializable {
     @ManyToOne
     private Client client;
 
-    @OneToOne
-    private ProductOrder productOrder;
+    @OneToMany
+    private List<ProductOrder> productOrder;
 
     private double amount;
 

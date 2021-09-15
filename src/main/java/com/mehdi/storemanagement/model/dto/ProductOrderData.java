@@ -1,6 +1,5 @@
 package com.mehdi.storemanagement.model.dto;
 
-import com.mehdi.storemanagement.model.Product;
 import com.mehdi.storemanagement.model.ProductOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;

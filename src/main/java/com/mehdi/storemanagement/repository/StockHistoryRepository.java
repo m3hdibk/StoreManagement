@@ -5,11 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-
+@Repository
 public interface StockHistoryRepository extends JpaRepository<StockHistory, Long> {
 
     @Query(value = "select sh from stockHistory sh where sh.stock.id = ?1")
