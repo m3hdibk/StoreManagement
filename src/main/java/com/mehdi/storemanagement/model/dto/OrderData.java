@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +28,7 @@ public class OrderData implements Serializable {
 
     private ClientData client;
 
-    private ProductOrderData productOrder;
+    private List<ProductOrderData> productOrder;
 
     private double amount;
 
@@ -41,9 +43,10 @@ public class OrderData implements Serializable {
         order.setId(id);
         order.setRef(ref);
         order.setClient(client.convertToEntity());
+        order.setProductOrder(productOrder.stream().map(ProductOrderData::convertToEntity).collect(Collectors.toList()));
         order.setAmount(amount);
         order.setDiscount(discount);
-        order.setTotalAmount(amount);
+        order.setTotalAmount(totalAmount);
         order.setPaymentType(paymentType);
         order.setStatus(status);
         return order;

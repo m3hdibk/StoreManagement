@@ -1,5 +1,6 @@
 package com.mehdi.storemanagement.model;
 
+import com.mehdi.storemanagement.model.dto.ProductOrderData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,12 +22,20 @@ public class ProductOrder implements Serializable {
     private static final long serialVersionUID = 5697940514025383003L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne
     private Product product;
 
     private int quantity;
+
+    public ProductOrderData convertToData() {
+        ProductOrderData productOrder = new ProductOrderData();
+        productOrder.setId(id);
+        productOrder.setProduct(product.convertToData());
+        productOrder.setQuantity(quantity);
+        return productOrder;
+    }
 
 }

@@ -22,7 +22,7 @@ public class Product implements Serializable {
     private static final long serialVersionUID = -7019253637795132559L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String productCode;
     private double buyPrice;

@@ -28,11 +28,11 @@ public class StockHistory implements Serializable {
     private long id;
 
     @OneToOne
-    @JoinColumn(name="stock_id")
+    @JoinColumn(name = "stock_id")
     private Stock stock;
 
     @ManyToOne
-    @JoinColumn(name="scheme_id")
+    @JoinColumn(name = "scheme_id")
     private Scheme location;
 
     private int quantity;
@@ -48,7 +48,9 @@ public class StockHistory implements Serializable {
         StockHistoryData stockHistoryData = new StockHistoryData();
         stockHistoryData.setId(id);
         stockHistoryData.setStock(stock.convertToData());
-        stockHistoryData.setLocation(location.convertToData());
+        if (location != null) {
+            stockHistoryData.setLocation(location.convertToData());
+        }
         stockHistoryData.setQuantity(quantity);
         stockHistoryData.setTransactionType(transactionType);
         stockHistoryData.setComment(comment);

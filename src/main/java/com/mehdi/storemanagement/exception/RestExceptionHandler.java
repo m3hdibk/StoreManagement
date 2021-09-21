@@ -114,6 +114,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler(NoEnoughQuantityException.class)
+    public final ResponseEntity<Object> handleNoEnoughQuantityException(NoEnoughQuantityException ex, WebRequest request) {
+        return getExceptionResponseEntity(ex, HttpStatus.BAD_REQUEST, request, new ArrayList<>());
+
+    }
+
     @ExceptionHandler(InputValidationException.class)
     public final ResponseEntity<Object> handleInputValidationException(InputValidationException ex, WebRequest request) {
         return getExceptionResponseEntity(ex, HttpStatus.BAD_REQUEST, request, ex.getErrors());

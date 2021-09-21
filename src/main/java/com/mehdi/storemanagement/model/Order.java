@@ -1,5 +1,6 @@
 package com.mehdi.storemanagement.model;
 
+import com.mehdi.storemanagement.model.dto.OrderData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity(name = "orders")
 @NoArgsConstructor
@@ -23,7 +25,7 @@ public class Order implements Serializable {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String ref;
 
@@ -41,5 +43,18 @@ public class Order implements Serializable {
     private int paymentType;
     private boolean status;
 
+    public OrderData convertToData() {
+        OrderData orderData = new OrderData();
 
+        orderData.setId(id);
+        orderData.setRef(ref);
+        orderData.setClient(client.convertToData());
+        orderData.setProductOrder(productOrder.stream().map(ProductOrder::convertToData).collect(Collectors.toList()));
+        orderData.setAmount(amount);
+        orderData.setDiscount(discount);
+        orderData.setTotalAmount(totalAmount);
+        orderData.setPaymentType(paymentType);
+        orderData.setStatus(status);
+        return orderData;
+    }
 }
