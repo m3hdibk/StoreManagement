@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,17 +39,8 @@ public class StockHistoryInformationResponse implements Serializable {
             StockHistoryLocationResponse stockHistoryLocationResponse = new StockHistoryLocationResponse();
             SchemeData schemeData = schemeDataListEntry.getKey();
             stockHistoryLocationResponse.setLocation(new SimpleValue<>(schemeData.getId(), schemeData.getName()));
-            stockHistoryLocationResponse.setStockHistories(schemeDataListEntry.getValue().stream().map(stockHistoryData -> {
-                StockHistoryResponse stockHistoryResponse = new StockHistoryResponse();
-                stockHistoryResponse.setId(stockHistoryData.getId());
-                stockHistoryResponse.setTransactionType(new SimpleValue<>(stockHistoryData.getTransactionType(),
-                        StockUtils.StockTransactionType.getById(stockHistoryData.getTransactionType()).getName()));
-                stockHistoryResponse.setComment(stockHistoryData.getComment());
-                stockHistoryResponse.setQuantity(stockHistoryData.getQuantity());
-                stockHistoryResponse.setDate(stockHistoryData.getDate());
-                stockHistoryResponse.setTime(stockHistoryData.getTime());
-                return stockHistoryResponse;
-            } ).collect(Collectors.toList()));
+            stockHistoryLocationResponse.setStockHistories(
+                    StockUtils.getStockHistoryResponseList(schemeDataListEntry.getValue()));
             return stockHistoryLocationResponse;
         }).collect(Collectors.toList());
     }

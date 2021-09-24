@@ -129,9 +129,16 @@ public record ProductServiceImpl(ProductRepository productRepository, StockRepos
     }
 
     @Override
-    public PageResponse<ProductData> getAllProducts(int page, int size) {
+    public PageResponse<ProductData> getAllProducts(String productCode, int page, int size) {
         Pageable paging = PageRequest.of(page, size);
-        Page<Product> pageProduct = productRepository.findAll(paging);
+        Page<Product> pageProduct;
+        if (productCode != null) {
+            pageProduct = productRepository.findAllByProductCode(productCode, paging);
+
+        } else {
+            pageProduct = productRepository.findAll(paging);
+
+        }
 
         List<ProductData> products = pageProduct.getContent().stream()
                 .map(Product::convertToData)

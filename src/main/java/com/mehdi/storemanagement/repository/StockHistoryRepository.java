@@ -25,4 +25,9 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Long
     Page<StockHistory> findByDate(LocalDate date, Pageable pageable);
 
     Page<StockHistory> findByDateAndTime(LocalDate date, LocalTime time, Pageable paging);
+
+    @Query("select sh from stockHistory sh where sh.stock.product.id = ?1 and sh.stock.location.id = ?2 " +
+            "order by sh.date, sh.time desc")
+    Page<StockHistory> findByProductIdAndLocation(long productId, long locationId, Pageable pageable);
+
 }

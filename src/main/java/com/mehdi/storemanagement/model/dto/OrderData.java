@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,8 @@ public class OrderData implements Serializable {
     private double totalAmount;
     private int paymentType;
     private boolean status;
+    private LocalDateTime date;
+
 
     public Order convertToEntity(){
         Order order = new Order();
@@ -49,6 +52,7 @@ public class OrderData implements Serializable {
         order.setTotalAmount(totalAmount);
         order.setPaymentType(paymentType);
         order.setStatus(status);
+        order.setDate(date);
         return order;
     }
 }

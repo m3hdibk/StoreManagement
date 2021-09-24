@@ -4,6 +4,7 @@ package com.mehdi.storemanagement.controller;
 import com.mehdi.storemanagement.model.dto.StockHistoryData;
 import com.mehdi.storemanagement.model.dto.response.PageResponse;
 import com.mehdi.storemanagement.model.dto.response.StockHistoryInformationResponse;
+import com.mehdi.storemanagement.model.dto.response.StockHistoryResponse;
 import com.mehdi.storemanagement.service.impl.StockHistoryServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,8 +29,6 @@ public class StockHistoryController {
             @RequestParam long productId) {
 
         StockHistoryInformationResponse response = stockHistoryService.getStockHistoryInformation(productId);
-
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -43,6 +42,17 @@ public class StockHistoryController {
             @RequestParam(defaultValue = "3") int size) {
 
         PageResponse<StockHistoryData> response = stockHistoryService.getStockHistoryAnalytics(date, time, page, size);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/more")
+    public ResponseEntity<?> getStockHistoryByProductIdAndLocation(
+            @RequestParam long productId, @RequestParam long locationId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "4") int size) {
+
+        PageResponse<StockHistoryResponse> response =
+                stockHistoryService.getStockHistoryByProductIdAndLocation(productId, locationId, page, size);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

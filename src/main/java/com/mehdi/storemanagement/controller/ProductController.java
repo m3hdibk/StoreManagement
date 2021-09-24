@@ -1,6 +1,5 @@
 package com.mehdi.storemanagement.controller;
 
-import com.mehdi.storemanagement.model.dto.SchemeData;
 import com.mehdi.storemanagement.model.dto.request.ProductRequest;
 import com.mehdi.storemanagement.model.dto.request.ProductUpdateRequest;
 import com.mehdi.storemanagement.model.dto.response.PageResponse;
@@ -21,11 +20,12 @@ public class ProductController {
     private final ProductServiceImpl productService;
 
     @GetMapping
-    public ResponseEntity<?> getAllSchemes(
+    public ResponseEntity<?> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam String productCode) {
 
-        PageResponse<ProductData> response = productService.getAllProducts(page, size);
+        PageResponse<ProductData> response = productService.getAllProducts(productCode, page, size);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

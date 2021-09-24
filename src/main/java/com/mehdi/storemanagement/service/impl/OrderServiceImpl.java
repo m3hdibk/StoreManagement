@@ -3,22 +3,25 @@ package com.mehdi.storemanagement.service.impl;
 import com.mehdi.storemanagement.exception.NoEnoughQuantityException;
 import com.mehdi.storemanagement.model.*;
 import com.mehdi.storemanagement.model.dto.OrderData;
-import com.mehdi.storemanagement.model.dto.ProductData;
 import com.mehdi.storemanagement.model.dto.StockData;
 import com.mehdi.storemanagement.model.dto.StockHistoryData;
 import com.mehdi.storemanagement.model.dto.request.OrderRequest;
 import com.mehdi.storemanagement.model.dto.request.ProductOrderRequest;
+import com.mehdi.storemanagement.model.dto.response.OrderResponse;
 import com.mehdi.storemanagement.model.dto.response.PageResponse;
 import com.mehdi.storemanagement.repository.*;
 import com.mehdi.storemanagement.service.OrderService;
+import com.mehdi.storemanagement.util.ResponseConverterUtils;
 import com.mehdi.storemanagement.util.StockUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,19 +78,20 @@ public record OrderServiceImpl(OrderRepository orderRepository, ProductRepositor
         order.setAmount(totalAmount);
         order.setTotalAmount(totalAmount - orderRequest.getDiscount());
         order.setProductOrder(productOrderList);
+        order.setDate(LocalDateTime.of(currentDate, currentTime));
         orderRepository.save(order);
     }
 
     @Override
-    public PageResponse<OrderData> getAllOrders(int page, int size) {
-        Pageable paging = PageRequest.of(page, size);
+    public PageResponse<OrderResponse> getAllOrders(int page, int size, String sort) {
+        Pageable paging = PageRequest.of(page, size).withSort(Sort.by(sort));
         Page<Order> pageOrder = orderRepository.findAll(paging);
 
         List<OrderData> orders = pageOrder.getContent().stream()
                 .map(Order::convertToData)
                 .collect(Collectors.toList());
 
-        return new PageResponse<>(orders, pageOrder.getNumber(),
+        return new PageResponse<>(ResponseConverterUtils.convertToOrderResponse(orders), pageOrder.getNumber(),
                 pageOrder.getTotalElements(),
                 pageOrder.getTotalPages());
     }

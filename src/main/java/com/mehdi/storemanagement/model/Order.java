@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class Order implements Serializable {
     @ManyToOne
     private Client client;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<ProductOrder> productOrder;
 
     private double amount;
@@ -42,6 +43,7 @@ public class Order implements Serializable {
     private double totalAmount;
     private int paymentType;
     private boolean status;
+    private LocalDateTime date;
 
     public OrderData convertToData() {
         OrderData orderData = new OrderData();
@@ -55,6 +57,7 @@ public class Order implements Serializable {
         orderData.setTotalAmount(totalAmount);
         orderData.setPaymentType(paymentType);
         orderData.setStatus(status);
+        orderData.setDate(date);
         return orderData;
     }
 }

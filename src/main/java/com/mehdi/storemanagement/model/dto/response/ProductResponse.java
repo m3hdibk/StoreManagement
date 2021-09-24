@@ -1,7 +1,6 @@
 package com.mehdi.storemanagement.model.dto.response;
 
 
-import com.mehdi.storemanagement.model.dto.SchemeData;
 import com.mehdi.storemanagement.model.dto.SimpleValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;

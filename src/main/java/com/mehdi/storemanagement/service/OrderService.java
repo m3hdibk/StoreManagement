@@ -1,12 +1,12 @@
 package com.mehdi.storemanagement.service;
 
-import com.mehdi.storemanagement.model.dto.OrderData;
 import com.mehdi.storemanagement.model.dto.request.OrderRequest;
+import com.mehdi.storemanagement.model.dto.response.OrderResponse;
 import com.mehdi.storemanagement.model.dto.response.PageResponse;
 
 public interface OrderService {
 
     void createOrder(OrderRequest orderRequest);
-    PageResponse<OrderData> getAllOrders(int page, int size);
+    PageResponse<OrderResponse> getAllOrders(int page, int size, String sort);
 
 }

@@ -1,6 +1,12 @@
 package com.mehdi.storemanagement.util;
 
+import com.mehdi.storemanagement.model.dto.SimpleValue;
+import com.mehdi.storemanagement.model.dto.StockHistoryData;
+import com.mehdi.storemanagement.model.dto.response.StockHistoryResponse;
+
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StockUtils {
 
@@ -38,6 +44,20 @@ public class StockUtils {
                     .findFirst()
                     .orElse(null);
         }
+    }
+
+    public static List<StockHistoryResponse> getStockHistoryResponseList(List<StockHistoryData> stockHistoryDataList) {
+        return stockHistoryDataList.stream().map(stockHistoryData -> {
+            StockHistoryResponse stockHistoryResponse = new StockHistoryResponse();
+            stockHistoryResponse.setId(stockHistoryData.getId());
+            stockHistoryResponse.setTransactionType(new SimpleValue<>(stockHistoryData.getTransactionType(),
+                    StockTransactionType.getById(stockHistoryData.getTransactionType()).getName()));
+            stockHistoryResponse.setComment(stockHistoryData.getComment());
+            stockHistoryResponse.setQuantity(stockHistoryData.getQuantity());
+            stockHistoryResponse.setDate(stockHistoryData.getDate());
+            stockHistoryResponse.setTime(stockHistoryData.getTime());
+            return stockHistoryResponse;
+        }).collect(Collectors.toList());
     }
 
     public enum PaymentType {

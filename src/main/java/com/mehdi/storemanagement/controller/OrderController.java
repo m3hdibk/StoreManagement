@@ -1,7 +1,11 @@
 package com.mehdi.storemanagement.controller;
 
 
+import com.mehdi.storemanagement.model.dto.OrderData;
 import com.mehdi.storemanagement.model.dto.request.OrderRequest;
+import com.mehdi.storemanagement.model.dto.response.OrderResponse;
+import com.mehdi.storemanagement.model.dto.response.PageResponse;
+import com.mehdi.storemanagement.model.dto.response.StockLocationsResponse;
 import com.mehdi.storemanagement.service.impl.OrderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,5 +25,15 @@ public class OrderController {
 
         orderServiceImpl.createOrder(orderRequest);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(defaultValue = "date") String sort) {
+
+        PageResponse<OrderResponse> response = orderServiceImpl.getAllOrders(page, size, sort);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
