@@ -14,6 +14,7 @@ import com.mehdi.storemanagement.repository.SchemeRepository;
 import com.mehdi.storemanagement.repository.StockHistoryRepository;
 import com.mehdi.storemanagement.repository.StockRepository;
 import com.mehdi.storemanagement.service.StockService;
+import com.mehdi.storemanagement.util.ResponseConverterUtils;
 import com.mehdi.storemanagement.util.SchemeUtils;
 import com.mehdi.storemanagement.util.StockUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,7 @@ public record StockServiceImpl(StockRepository stockRepository, ProductRepositor
                     StockSumQuantityResponse stockSumQuantityResponse = new StockSumQuantityResponse();
                     stockSumQuantityResponse.setSumQuantity(stockSumQuantity.getSumQuantity());
                     ProductData productData = stockSumQuantity.getProduct().convertToData();
-                    ProductResponse productResponse = productData.convertToResponse();
+                    ProductResponse productResponse = ResponseConverterUtils.convertToProductResponse(productData);
                     stockSumQuantityResponse.setProductData(productResponse);
                     return stockSumQuantityResponse;
                 })
@@ -57,6 +58,30 @@ public record StockServiceImpl(StockRepository stockRepository, ProductRepositor
                 pageStock.getTotalElements(),
                 pageStock.getTotalPages());
     }
+
+    @Override
+    public PageResponse<StockSumQuantityResponse> searchStockByProduct(String searchInput, int page, int size) {
+
+        Pageable paging = PageRequest.of(page, size);
+        Page<StockSumQuantity> pageStock = stockRepository.findStockByProductWithQuantitySum(searchInput, paging);
+
+        List<StockSumQuantityResponse> products = pageStock.getContent().stream()
+                .map(stockSumQuantity -> {
+                    StockSumQuantityResponse stockSumQuantityResponse = new StockSumQuantityResponse();
+                    stockSumQuantityResponse.setSumQuantity(stockSumQuantity.getSumQuantity());
+                    ProductData productData = stockSumQuantity.getProduct().convertToData();
+                    ProductResponse productResponse = ResponseConverterUtils.convertToProductResponse(productData);
+                    stockSumQuantityResponse.setProductData(productResponse);
+                    return stockSumQuantityResponse;
+                })
+                .collect(Collectors.toList());
+
+        return new PageResponse<>(products, pageStock.getNumber(),
+                pageStock.getTotalElements(),
+                pageStock.getTotalPages());
+    }
+
+
 
 
     @Override
@@ -97,6 +122,7 @@ public record StockServiceImpl(StockRepository stockRepository, ProductRepositor
                 .map(stock -> {
                     StockLocationsResponse stockLocationsResponse = new StockLocationsResponse();
                     Scheme location = stock.getLocation();
+                    stockLocationsResponse.setId(stock.getId());
                     stockLocationsResponse.setLocation(new SimpleValue<>(location.getId(), location.getName()));
                     stockLocationsResponse.setQuantity(stock.getQuantity());
                     return stockLocationsResponse;

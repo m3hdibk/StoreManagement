@@ -2,7 +2,7 @@ package com.mehdi.storemanagement.util;
 
 import java.util.Arrays;
 
-public class SchemeUtils {
+public final class SchemeUtils {
 
     public enum SchemeType {
         LOCATION(1, "Location"),

@@ -1,14 +1,10 @@
 package com.mehdi.storemanagement.model.dto;
 
-import com.mehdi.storemanagement.model.Client;
 import com.mehdi.storemanagement.model.Order;
-import com.mehdi.storemanagement.model.ProductOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;

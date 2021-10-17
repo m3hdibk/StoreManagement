@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -20,17 +21,14 @@ public class ProductResponse implements Serializable {
 
     private long id;
     private String productCode;
-
     private double buyPrice;
-
     private double sellPrice;
-    private double length;
-    private double width;
-    private double height;
-    private double weight;
-    private long upc;
-
+    private List<TaxResponse> taxes;
+    private TaxResponse vat;
+    private SimpleValue<String> unit;
+    private String upc;
     private SimpleValue<String> brand;
     private Set<SimpleValue<String>> categories;
+    private double price;
 
 }

@@ -24,7 +24,7 @@ public class ProductUpdateRequest implements Serializable {
     private double width;
     private double height;
     private double weight;
-    private long upc;
+    private String upc;
     private long brandId;
     private Set<Long> categoriesIds;
 }

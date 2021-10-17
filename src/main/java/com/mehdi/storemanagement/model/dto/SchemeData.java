@@ -1,6 +1,5 @@
 package com.mehdi.storemanagement.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mehdi.storemanagement.model.Scheme;
 import lombok.AllArgsConstructor;
 import lombok.Data;

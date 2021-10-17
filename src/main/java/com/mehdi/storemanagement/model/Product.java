@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,11 +28,16 @@ public class Product implements Serializable {
     private String productCode;
     private double buyPrice;
     private double sellPrice;
-    private double length;
-    private double width;
-    private double height;
-    private double weight;
-    private long upc;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="taxes", joinColumns=@JoinColumn(name="sale_id"),
+            inverseJoinColumns=@JoinColumn(name="tax_id"))
+    private List<Tax> taxes;
+
+    @ManyToOne
+    private Tax vat;
+    private int unit;
+    private String upc;
 
     @ManyToOne
     @JoinColumn(name="scheme_id")
@@ -51,12 +57,16 @@ public class Product implements Serializable {
         productData.setProductCode(productCode);
         productData.setBuyPrice(buyPrice);
         productData.setSellPrice(sellPrice);
-        productData.setLength(length);
-        productData.setWidth(width);
-        productData.setWeight(weight);
+        if (taxes != null) {
+            productData.setTaxes(taxes.stream().map(Tax::convertToData).collect(Collectors.toList()));
+        }
+        productData.setVat(vat.convertToData());
+        productData.setUnit(unit);
         productData.setUpc(upc);
         productData.setBrand(brand.convertToData());
-        productData.setCategories(categories.stream().map(Scheme::convertToData).collect(Collectors.toSet()));
+        if (categories != null) {
+            productData.setCategories(categories.stream().map(Scheme::convertToData).collect(Collectors.toSet()));
+        }
         return productData;
     }
 

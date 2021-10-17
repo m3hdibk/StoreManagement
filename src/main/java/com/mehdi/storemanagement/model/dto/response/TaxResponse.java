@@ -1,5 +1,6 @@
 package com.mehdi.storemanagement.model.dto.response;
 
+
 import com.mehdi.storemanagement.model.dto.SimpleValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,15 +12,15 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class OrderResponse implements Serializable {
+public class TaxResponse implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = -3075005950811703020L;
+    private static final long serialVersionUID = 4122482150179847308L;
 
     private long id;
-    private String ref;
-    private SimpleValue<String> client;
-    private double total;
-    private SimpleValue<String> paymentType;
-    private boolean status;
+    private SimpleValue<String> type;
+    private SimpleValue<String> amountType;
+    private double amount;
+    private boolean beforeVAT;
+
 }

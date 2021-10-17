@@ -6,6 +6,7 @@ import com.mehdi.storemanagement.model.dto.response.PageResponse;
 import com.mehdi.storemanagement.model.dto.response.StockHistoryInformationResponse;
 import com.mehdi.storemanagement.model.dto.response.StockHistoryResponse;
 import com.mehdi.storemanagement.service.impl.StockHistoryServiceImpl;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/stockHistory")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class StockHistoryController {
 
     private final StockHistoryServiceImpl stockHistoryService;

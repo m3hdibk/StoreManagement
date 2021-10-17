@@ -3,10 +3,12 @@ package com.mehdi.storemanagement.service.impl;
 import com.mehdi.storemanagement.exception.NoEnoughQuantityException;
 import com.mehdi.storemanagement.model.*;
 import com.mehdi.storemanagement.model.dto.OrderData;
+import com.mehdi.storemanagement.model.dto.ProductData;
 import com.mehdi.storemanagement.model.dto.StockData;
 import com.mehdi.storemanagement.model.dto.StockHistoryData;
 import com.mehdi.storemanagement.model.dto.request.OrderRequest;
 import com.mehdi.storemanagement.model.dto.request.ProductOrderRequest;
+import com.mehdi.storemanagement.model.dto.response.OrderInfoResponse;
 import com.mehdi.storemanagement.model.dto.response.OrderResponse;
 import com.mehdi.storemanagement.model.dto.response.PageResponse;
 import com.mehdi.storemanagement.repository.*;
@@ -38,10 +40,9 @@ public record OrderServiceImpl(OrderRepository orderRepository, ProductRepositor
     public void createOrder(OrderRequest orderRequest) {
         Order order = new Order();
         List<ProductOrder> productOrderList = new ArrayList<>();
-        if (orderRequest.getClientId() != 0) {
-            Client client = new Client();
-            client.setId(orderRequest.getClientId());
-        }
+        Client client = new Client();
+        client.setId(orderRequest.getClientId());
+        order.setClient(client);
         LocalDate currentDate = LocalDate.now();
         LocalTime currentTime = LocalTime.now();
 
@@ -55,7 +56,9 @@ public record OrderServiceImpl(OrderRepository orderRepository, ProductRepositor
             if (stockData.getQuantity() < productOrder.getQuantity()) {
                 throw new NoEnoughQuantityException("No enough quantity in the Stock");
             }
-            totalAmount += stockData.getProduct().getSellPrice() * productOrder.getQuantity();
+            ProductData productData = stockData.getProduct();
+            totalAmount += productData.getSellPrice() * (productData.getVat().getAmount() / 100 + 1) *
+                    productOrder.getQuantity();
             stockData.setQuantity(stockData.getQuantity() - productOrder.getQuantity());
             StockHistoryData stockHistory = new StockHistoryData();
             stockHistory.setStock(stockData);
@@ -72,7 +75,7 @@ public record OrderServiceImpl(OrderRepository orderRepository, ProductRepositor
             productOrderRepository.save(productOrderEntity);
         }
 
-        order.setStatus(true);
+        order.setStatus(orderRequest.isPaymentStatus());
         order.setPaymentType(orderRequest.getPaymentType());
         order.setDiscount(orderRequest.getDiscount());
         order.setAmount(totalAmount);
@@ -94,5 +97,16 @@ public record OrderServiceImpl(OrderRepository orderRepository, ProductRepositor
         return new PageResponse<>(ResponseConverterUtils.convertToOrderResponse(orders), pageOrder.getNumber(),
                 pageOrder.getTotalElements(),
                 pageOrder.getTotalPages());
+    }
+
+    @Override
+    public OrderInfoResponse getOrderInfo(long id) {
+        Optional<Order> optOrder = orderRepository.findById(id);
+        if (optOrder.isEmpty()) {
+            return null;
+        }
+        OrderData order = optOrder.get().convertToData();
+        return ResponseConverterUtils.convertToOrderInfoResponse(order);
+
     }
 }

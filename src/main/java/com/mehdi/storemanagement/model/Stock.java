@@ -1,6 +1,5 @@
 package com.mehdi.storemanagement.model;
 
-import com.mehdi.storemanagement.model.dto.SchemeData;
 import com.mehdi.storemanagement.model.dto.StockData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

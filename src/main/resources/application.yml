@@ -35,3 +35,14 @@ springdoc:
   swagger-ui:
     path: /swagger
     operations-sorter: method
+
+# Keycloak
+keycloak:
+  auth-server-url: http://localhost:8180/auth
+  realm: StoreManagement
+  resource: store-management-client
+  ssl-required: external
+  credentials:
+    secret: cc2bde34-436c-44ef-b347-94c0c27b8e19
+  use-resource-role-mappings: true
+  bearer-only: true

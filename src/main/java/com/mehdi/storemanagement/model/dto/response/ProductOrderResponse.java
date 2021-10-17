@@ -1,6 +1,7 @@
 package com.mehdi.storemanagement.model.dto.response;
 
-import com.mehdi.storemanagement.model.dto.SimpleValue;
+
+import com.mehdi.storemanagement.model.dto.ProductData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,12 +12,15 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class StockLocationsResponse implements Serializable {
+public class ProductOrderResponse implements Serializable {
+
 
     @Serial
-    private static final long serialVersionUID = 5702391214585263021L;
+    private static final long serialVersionUID = 8127577694170733778L;
 
     private long id;
-    private SimpleValue<String> location;
+
+    private ProductResponse product;
+
     private int quantity;
 }

@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -25,15 +26,15 @@ public class ProductRequest implements Serializable {
     @NotBlank(message = "productCode must have a value")
     @NotNull
     private String productCode;
+    private String name;
 
     private double buyPrice;
 
     private double sellPrice;
-    private double length;
-    private double width;
-    private double height;
-    private double weight;
-    private long upc;
+    private int unit;
+    private List<Long> taxes;
+    private long vat;
+    private String upc;
     private long brandId;
     private Set<Long> categoriesIds;
     private long locationId;

@@ -9,6 +9,9 @@ public interface StockService {
 
     PageResponse<StockSumQuantityResponse> getAllStockInformation(int page, int size);
 
+    PageResponse<StockSumQuantityResponse> searchStockByProduct(String searchInput, int page, int size);
+
+
     void updateStock(StockUpdateRequest stockUpdateRequest, long stockId);
 
     PageResponse<StockLocationsResponse> getStockLocations(long productId, int page, int size);
