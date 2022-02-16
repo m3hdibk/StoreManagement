@@ -29,12 +29,14 @@ public class ProductOrder implements Serializable {
     private Product product;
 
     private int quantity;
+    private double discount;
 
     public ProductOrderData convertToData() {
         ProductOrderData productOrder = new ProductOrderData();
         productOrder.setId(id);
         productOrder.setProduct(product.convertToData());
         productOrder.setQuantity(quantity);
+        productOrder.setDiscount(discount);
         return productOrder;
     }
 

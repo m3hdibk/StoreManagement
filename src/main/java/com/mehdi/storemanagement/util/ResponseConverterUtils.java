@@ -14,14 +14,14 @@ public final class ResponseConverterUtils {
                 .collect(Collectors.toList());
     }
 
-    private static OrderInfoResponse getOrderResponse(OrderData orderData) {
-        OrderInfoResponse orderResponse = new OrderInfoResponse();
+    private static OrderResponse getOrderResponse(OrderData orderData) {
+        OrderResponse orderResponse = new OrderResponse();
         orderResponse.setId(orderData.getId());
         orderResponse.setRef(orderData.getRef());
-        ClientData clientData = orderData.getClient();
-        orderResponse.setClient(new SimpleValue<>(clientData.getId(),
-                clientData.getLastName() != null ? clientData.getName() + " " + clientData.getLastName() :
-                        clientData.getName()));
+        UserData userData = orderData.getClient();
+        orderResponse.setClient(new SimpleValue<>(userData.getId(),
+                userData.getLastName() != null ? userData.getName() + " " + userData.getLastName() :
+                        userData.getName()));
         orderResponse.setStatus(orderData.isStatus());
         orderResponse.setTotal(orderData.getTotalAmount());
         StockUtils.PaymentType paymentType = StockUtils.PaymentType.getById(orderData.getPaymentType());
@@ -30,7 +30,8 @@ public final class ResponseConverterUtils {
     }
 
     public static OrderInfoResponse convertToOrderInfoResponse(OrderData orderData) {
-        OrderInfoResponse orderInfoResponse = getOrderResponse(orderData);
+        OrderResponse orderResponse = getOrderResponse(orderData);
+        OrderInfoResponse orderInfoResponse = new OrderInfoResponse(orderResponse);
         orderInfoResponse.setProducts(orderData.getProductOrder()
                 .stream()
                 .map(ResponseConverterUtils::convertToProductOrderResponse)
@@ -38,17 +39,23 @@ public final class ResponseConverterUtils {
         return orderInfoResponse;
     }
 
-    private static TaxResponse convertToTaxResponse(TaxData taxData) {
+    public static TaxResponse convertToTaxResponse(TaxData taxData) {
         TaxResponse taxResponse = new TaxResponse();
         taxResponse.setId(taxData.getId());
-        taxResponse.setAmount(taxData.getAmount());
 
         int type = taxData.getType();
         StockUtils.TaxType taxType = StockUtils.TaxType.getById(type);
         taxResponse.setType(new SimpleValue<>(taxType.getId(), taxType.getName()));
-        if (type != 1) {
+        if (type != StockUtils.TaxType.VAT.getId()) {
             StockUtils.TaxAmountType taxAmountType = StockUtils.TaxAmountType.getById(taxData.getAmountType());
             taxResponse.setAmountType(new SimpleValue<>(taxAmountType.getId(), taxAmountType.getName()));
+            if (taxAmountType == StockUtils.TaxAmountType.Percent) {
+                taxResponse.setAmount(taxData.getAmount() * 100);
+            } else {
+                taxResponse.setAmount(taxData.getAmount());
+            }
+        } else {
+            taxResponse.setAmount(taxData.getAmount() * 100);
         }
         taxResponse.setBeforeVAT(taxData.isBeforeVAT());
         return taxResponse;
@@ -74,8 +81,12 @@ public final class ResponseConverterUtils {
         productResponse.setBuyPrice(productData.getBuyPrice());
         productResponse.setSellPrice(productData.getSellPrice());
         productResponse.setUpc(productData.getUpc());
-        productResponse.setTaxes(convertToTaxResponse(productData.getTaxes()));
-        productResponse.setVat(convertToTaxResponse(productData.getVat()));
+        if (productData.getTaxes() != null) {
+            productResponse.setTaxes(convertToTaxResponse(productData.getTaxes()));
+        }
+        if (productData.getVat() != null) {
+            productResponse.setVat(convertToTaxResponse(productData.getVat()));
+        }
         StockUtils.Unit unit = StockUtils.Unit.getById(productData.getUnit());
         productResponse.setUnit(new SimpleValue<>(unit.getId(), unit.getName()));
         SchemeData brand = productData.getBrand();
@@ -90,6 +101,20 @@ public final class ResponseConverterUtils {
     public static List<ProductResponse> convertToProductResponseList(List<ProductData> productResponseList) {
         return productResponseList.stream().map(ResponseConverterUtils::convertToProductResponse)
                 .collect(Collectors.toList());
+    }
+
+    public static SimpleValue<String> convertSchemeToSimpleValue(SchemeData schemeData) {
+        return new SimpleValue<>(schemeData.getId(), schemeData.getName());
+    }
+
+
+    public static StockResponse convertToStockResponse(StockData stockData) {
+        StockResponse stockResponse = new StockResponse();
+        stockResponse.setId(stockData.getId());
+        stockResponse.setQuantity(stockData.getQuantity());
+        stockResponse.setProduct(convertToProductResponse(stockData.getProduct()));
+        stockResponse.setLocation(convertSchemeToSimpleValue(stockData.getLocation()));
+        return stockResponse;
     }
 
 

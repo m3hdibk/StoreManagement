@@ -8,6 +8,7 @@ import com.mehdi.storemanagement.model.dto.response.PageResponse;
 import com.mehdi.storemanagement.model.dto.response.StockHistoryInformationResponse;
 import com.mehdi.storemanagement.model.dto.response.StockHistoryResponse;
 import com.mehdi.storemanagement.repository.StockHistoryRepository;
+import com.mehdi.storemanagement.repository.StockRepository;
 import com.mehdi.storemanagement.service.StockHistoryService;
 import com.mehdi.storemanagement.util.StockUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,8 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public record StockHistoryServiceImpl(StockHistoryRepository stockHistoryRepository) implements StockHistoryService {
+public record StockHistoryServiceImpl(StockHistoryRepository stockHistoryRepository,
+                                      StockRepository stockRepository) implements StockHistoryService {
 
     public static final int DEFAULT_LOCATION_LIMIT = 3;
     public static final int DEFAULT_STOCK_HISTORY_LIMIT = 4;
@@ -34,13 +36,14 @@ public record StockHistoryServiceImpl(StockHistoryRepository stockHistoryReposit
 
         List<StockHistory> stockHistoryPage = stockHistoryRepository.findByProductId(productId,
                 DEFAULT_LOCATION_LIMIT, DEFAULT_STOCK_HISTORY_LIMIT);
+        int sumQuantity = stockRepository.getQuantitySum(productId);
 
         List<StockHistoryData> list = stockHistoryPage.stream()
                 .map(StockHistory::convertToData)
                 .collect(Collectors.toList());
 
         StockHistoryInformationResponse stockHistoryInformationResponse = new StockHistoryInformationResponse();
-        stockHistoryInformationResponse.build(list);
+        stockHistoryInformationResponse.build(list, sumQuantity);
         return stockHistoryInformationResponse;
     }
 

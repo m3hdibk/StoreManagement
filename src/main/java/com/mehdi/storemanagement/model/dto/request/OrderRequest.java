@@ -19,6 +19,7 @@ public class OrderRequest implements Serializable {
     private long clientId;
     private List<ProductOrderRequest> products;
     private double discount;
+    private List<Long> taxes;
     private boolean paymentStatus;
     private int paymentType;
 }

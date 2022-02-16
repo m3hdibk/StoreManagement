@@ -49,7 +49,7 @@ public record StockServiceImpl(StockRepository stockRepository, ProductRepositor
                     stockSumQuantityResponse.setSumQuantity(stockSumQuantity.getSumQuantity());
                     ProductData productData = stockSumQuantity.getProduct().convertToData();
                     ProductResponse productResponse = ResponseConverterUtils.convertToProductResponse(productData);
-                    stockSumQuantityResponse.setProductData(productResponse);
+                    stockSumQuantityResponse.setProduct(productResponse);
                     return stockSumQuantityResponse;
                 })
                 .collect(Collectors.toList());
@@ -60,25 +60,47 @@ public record StockServiceImpl(StockRepository stockRepository, ProductRepositor
     }
 
     @Override
-    public PageResponse<StockSumQuantityResponse> searchStockByProduct(String searchInput, int page, int size) {
+    public PageResponse<StockSumQuantityResponse> searchStockByProduct(boolean useDefaultLocation, String searchInput,
+                                                                       int page, int size) {
 
         Pageable paging = PageRequest.of(page, size);
-        Page<StockSumQuantity> pageStock = stockRepository.findStockByProductWithQuantitySum(searchInput, paging);
+        List<StockSumQuantityResponse> products;
+        int currentPage;
+        long totalItems;
+        int totalPages;
+        if (useDefaultLocation) {
+            Page<Stock> pageStock = stockRepository.findStocksByProductAndDefaultType(searchInput,
+                            SchemeUtils.SchemeType.LOCATION.getId(), paging);
+            currentPage = pageStock.getNumber();
+            totalItems = pageStock.getTotalElements();
+            totalPages = pageStock.getTotalPages();
+            products = pageStock.getContent().stream().map(stock -> {
+                StockSumQuantityResponse stockSumQuantityResponse = new StockSumQuantityResponse();
+                stockSumQuantityResponse.setId(stock.getId());
+                stockSumQuantityResponse.setSumQuantity(stock.getQuantity());
+                ProductData productData = stock.getProduct().convertToData();
+                ProductResponse productResponse = ResponseConverterUtils.convertToProductResponse(productData);
+                stockSumQuantityResponse.setProduct(productResponse);
+                return stockSumQuantityResponse;
+            }).collect(Collectors.toList());
+        } else {
+            Page<StockSumQuantity> pageStockSum = stockRepository.findStockByProductWithQuantitySum(searchInput, paging);
+            currentPage = pageStockSum.getNumber();
+            totalItems = pageStockSum.getTotalElements();
+            totalPages = pageStockSum.getTotalPages();
+            products= pageStockSum.getContent().stream()
+                    .map(stockSumQuantity -> {
+                        StockSumQuantityResponse stockSumQuantityResponse = new StockSumQuantityResponse();
+                        stockSumQuantityResponse.setSumQuantity(stockSumQuantity.getSumQuantity());
+                        ProductData productData = stockSumQuantity.getProduct().convertToData();
+                        ProductResponse productResponse = ResponseConverterUtils.convertToProductResponse(productData);
+                        stockSumQuantityResponse.setProduct(productResponse);
+                        return stockSumQuantityResponse;
+                    }).collect(Collectors.toList());
+        }
 
-        List<StockSumQuantityResponse> products = pageStock.getContent().stream()
-                .map(stockSumQuantity -> {
-                    StockSumQuantityResponse stockSumQuantityResponse = new StockSumQuantityResponse();
-                    stockSumQuantityResponse.setSumQuantity(stockSumQuantity.getSumQuantity());
-                    ProductData productData = stockSumQuantity.getProduct().convertToData();
-                    ProductResponse productResponse = ResponseConverterUtils.convertToProductResponse(productData);
-                    stockSumQuantityResponse.setProductData(productResponse);
-                    return stockSumQuantityResponse;
-                })
-                .collect(Collectors.toList());
 
-        return new PageResponse<>(products, pageStock.getNumber(),
-                pageStock.getTotalElements(),
-                pageStock.getTotalPages());
+        return new PageResponse<>(products, currentPage, totalItems, totalPages);
     }
 
 

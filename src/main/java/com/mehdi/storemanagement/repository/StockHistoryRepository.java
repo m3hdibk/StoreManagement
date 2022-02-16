@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -29,5 +30,13 @@ public interface StockHistoryRepository extends JpaRepository<StockHistory, Long
     @Query("select sh from stockHistory sh where sh.stock.product.id = ?1 and sh.stock.location.id = ?2 " +
             "order by sh.date, sh.time desc")
     Page<StockHistory> findByProductIdAndLocation(long productId, long locationId, Pageable pageable);
+
+
+    // TODO  finish this
+    int countAllByDateBetweenAndTransactionType(LocalDate startDate, LocalDate endDate, int transactionType);
+
+    @Query("SELECT COALESCE(sum(s.quantity), 0) FROM stockHistory s where s.date between ?1 and ?2 " +
+            "and s.transactionType = ?3")
+    double sumAllByDateBetween(LocalDate startDate, LocalDate endDate, int transactionType);
 
 }

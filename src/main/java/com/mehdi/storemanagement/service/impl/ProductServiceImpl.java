@@ -11,6 +11,7 @@ import com.mehdi.storemanagement.model.dto.response.PageResponse;
 import com.mehdi.storemanagement.model.dto.response.ProductResponse;
 import com.mehdi.storemanagement.repository.*;
 import com.mehdi.storemanagement.service.ProductService;
+import com.mehdi.storemanagement.service.SchemeService;
 import com.mehdi.storemanagement.util.ResponseConverterUtils;
 import com.mehdi.storemanagement.util.SchemeUtils;
 import com.mehdi.storemanagement.util.StockUtils;
@@ -23,9 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public record ProductServiceImpl(ProductRepository productRepository, StockRepository stockRepository,
                                  StockHistoryRepository stockHistoryRepository, SchemeRepository schemeRepository,
-                                 TaxRepository taxRepository)
+                                 TaxRepository taxRepository, SchemeService schemeService)
         implements ProductService {
 
 
@@ -41,28 +40,44 @@ public record ProductServiceImpl(ProductRepository productRepository, StockRepos
     public void createProduct(ProductRequest productRequest) {
         ProductData productData = new ProductData();
         productData.setProductCode(productRequest.getProductCode());
+        productData.setName(productRequest.getName());
         productData.setBuyPrice(productRequest.getBuyPrice());
         productData.setSellPrice(productRequest.getSellPrice());
         productData.setUpc(productRequest.getUpc());
         productData.setUnit(productRequest.getUnit());
-        TaxData vatData = new TaxData();
-        vatData.setId(productRequest.getVat());
-        productData.setVat(vatData);
-        List<TaxData> taxes = productRequest.getTaxes().stream().map(taxId -> {
-            TaxData taxData = new TaxData();
-            taxData.setId(taxId);
-            return taxData;
-        }).collect(Collectors.toList());
-        productData.setTaxes(taxes);
-        SchemeData brand = new SchemeData();
-        brand.setId(productRequest.getBrandId());
-        productData.setBrand(brand);
-        Set<SchemeData> categories = productRequest.getCategoriesIds().stream().map(categoryId -> {
-            SchemeData category = new SchemeData();
-            category.setId(categoryId);
-            return category;
-        }).collect(Collectors.toSet());
-        productData.setCategories(categories);
+        if (productRequest.getVat() != 0) {
+            TaxData vatData = new TaxData();
+            vatData.setId(productRequest.getVat());
+            productData.setVat(vatData);
+        }
+        if (productRequest.getTaxes() != null && !productRequest.getTaxes().isEmpty()) {
+            List<TaxData> taxes = productRequest.getTaxes().stream().map(taxId -> {
+                TaxData taxData = new TaxData();
+                taxData.setId(taxId);
+                return taxData;
+            }).collect(Collectors.toList());
+            productData.setTaxes(taxes);
+        }
+        if (productRequest.getBrandId() == 0) {
+            productData.setBrand(schemeService.getDefaultSchemeByType(SchemeUtils.SchemeType.BRAND.getId()));
+        } else {
+            SchemeData brand = new SchemeData();
+            brand.setId(productRequest.getBrandId());
+            productData.setBrand(brand);
+        }
+
+        if (productRequest.getCategoriesIds() != null && !productRequest.getCategoriesIds().isEmpty()) {
+            Set<SchemeData> categories = productRequest.getCategoriesIds().stream().map(categoryId -> {
+                SchemeData category = new SchemeData();
+                category.setId(categoryId);
+                return category;
+            }).collect(Collectors.toSet());
+            productData.setCategories(categories);
+        } else {
+            SchemeData defaultCategory = schemeService.getDefaultSchemeByType(SchemeUtils.SchemeType.CATEGORY.getId());
+            productData.setCategories(Collections.singleton(defaultCategory));
+        }
+
         Product product = productRepository.save(productData.convertToEntity());
         productData.setId(product.getId());
         StockData stock = new StockData();

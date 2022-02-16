@@ -25,6 +25,7 @@ public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private String name;
     private String productCode;
     private double buyPrice;
     private double sellPrice;
@@ -54,13 +55,16 @@ public class Product implements Serializable {
     public ProductData convertToData() {
         ProductData productData = new ProductData();
         productData.setId(id);
+        productData.setName(name);
         productData.setProductCode(productCode);
         productData.setBuyPrice(buyPrice);
         productData.setSellPrice(sellPrice);
         if (taxes != null) {
             productData.setTaxes(taxes.stream().map(Tax::convertToData).collect(Collectors.toList()));
         }
-        productData.setVat(vat.convertToData());
+        if (vat != null) {
+            productData.setVat(vat.convertToData());
+        }
         productData.setUnit(unit);
         productData.setUpc(upc);
         productData.setBrand(brand.convertToData());

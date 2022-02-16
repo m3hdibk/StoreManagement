@@ -22,11 +22,14 @@ public class ProductOrderData implements Serializable {
 
     private int quantity;
 
+    private double discount;
+
     public ProductOrder convertToEntity() {
         ProductOrder productOrder = new ProductOrder();
         productOrder.setId(id);
         productOrder.setProduct(product.convertToEntity());
         productOrder.setQuantity(quantity);
+        productOrder.setDiscount(discount);
         return productOrder;
     }
 }

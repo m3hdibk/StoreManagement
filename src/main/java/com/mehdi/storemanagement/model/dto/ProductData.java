@@ -30,6 +30,7 @@ public class ProductData implements Serializable {
     @NotBlank(message = "productCode must have a value")
     @NotNull
     private String productCode;
+    private String name;
 
     private double buyPrice;
 
@@ -50,10 +51,15 @@ public class ProductData implements Serializable {
         Product product = new Product();
         product.setId(id);
         product.setProductCode(productCode);
+        product.setName(name);
         product.setBuyPrice(buyPrice);
         product.setSellPrice(sellPrice);
-        product.setTaxes(taxes.stream().map(TaxData::convertToEntity).collect(Collectors.toList()));
-        product.setVat(vat.convertToEntity());
+        if (taxes != null) {
+            product.setTaxes(taxes.stream().map(TaxData::convertToEntity).collect(Collectors.toList()));
+        }
+        if (vat != null) {
+            product.setVat(vat.convertToEntity());
+        }
         product.setUnit(unit);
         product.setUpc(upc);
         product.setBrand(brand.convertToEntity());

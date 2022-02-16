@@ -17,4 +17,5 @@ public class ProductOrderRequest implements Serializable {
 
     private long stockId;
     private int quantity;
+    private double discount;
 }

@@ -31,7 +31,7 @@ public class Order implements Serializable {
     private String ref;
 
     @ManyToOne
-    private Client client;
+    private User user;
 
     @OneToMany(fetch = FetchType.EAGER)
     private List<ProductOrder> productOrder;
@@ -50,7 +50,7 @@ public class Order implements Serializable {
 
         orderData.setId(id);
         orderData.setRef(ref);
-        orderData.setClient(client.convertToData());
+        orderData.setClient(user.convertToData());
         orderData.setProductOrder(productOrder.stream().map(ProductOrder::convertToData).collect(Collectors.toList()));
         orderData.setAmount(amount);
         orderData.setDiscount(discount);

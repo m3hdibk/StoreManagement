@@ -34,9 +34,10 @@ public class StockController {
     public ResponseEntity<?> SearchStockByProduct(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size,
-            @RequestParam String searchInput) {
+            @RequestParam String searchInput,@RequestParam boolean useDefaultLocation) {
 
-        PageResponse<StockSumQuantityResponse> response = stockService.searchStockByProduct(searchInput, page, size);
+        PageResponse<StockSumQuantityResponse> response =
+                stockService.searchStockByProduct(useDefaultLocation, searchInput, page, size);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

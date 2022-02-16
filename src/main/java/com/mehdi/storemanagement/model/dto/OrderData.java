@@ -23,7 +23,7 @@ public class OrderData implements Serializable {
     private long id;
     private String ref;
 
-    private ClientData client;
+    private UserData client;
 
     private List<ProductOrderData> productOrder;
 
@@ -41,7 +41,7 @@ public class OrderData implements Serializable {
         Order order = new Order();
         order.setId(id);
         order.setRef(ref);
-        order.setClient(client.convertToEntity());
+        order.setUser(client.convertToEntity());
         order.setProductOrder(productOrder.stream().map(ProductOrderData::convertToEntity).collect(Collectors.toList()));
         order.setAmount(amount);
         order.setDiscount(discount);

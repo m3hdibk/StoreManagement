@@ -38,6 +38,9 @@ public class Scheme implements Serializable {
     @Column(name = "status", nullable = false)
     private boolean status;
 
+    @Column(name = "defaultitem", nullable = false)
+    private boolean defaultItem;
+
     public SchemeData convertToData() {
         SchemeData schemeData = new SchemeData();
         schemeData.setId(id);
@@ -45,6 +48,7 @@ public class Scheme implements Serializable {
         schemeData.setName(name);
         schemeData.setDescription(description);
         schemeData.setStatus(status);
+        schemeData.setDefaultItem(defaultItem);
         return schemeData;
     }
 

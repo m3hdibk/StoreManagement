@@ -5,6 +5,8 @@ import com.mehdi.storemanagement.model.dto.SchemeData;
 
 public interface SchemeService {
 
+    SchemeData getDefaultSchemeByType(int type);
+
     PageResponse<SchemeData> getAllSchemes(Integer type, int page, int size, boolean enabled);
 
     SchemeData getSchemeById(long schemeId);

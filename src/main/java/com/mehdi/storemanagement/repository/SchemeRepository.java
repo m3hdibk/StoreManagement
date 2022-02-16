@@ -21,5 +21,6 @@ public interface SchemeRepository extends JpaRepository<Scheme, Long> {
 
     Optional<Scheme> findSchemesByIdAndStatusTrueAndType(long schemeId, int type);
     boolean existsSchemeByIdAndStatusTrueAndType(long schemeId, int type);
+    Scheme findByTypeAndDefaultItemIsTrue(int type);
 
 }

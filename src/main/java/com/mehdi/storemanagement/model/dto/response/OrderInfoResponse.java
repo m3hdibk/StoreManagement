@@ -1,6 +1,5 @@
 package com.mehdi.storemanagement.model.dto.response;
 
-import com.mehdi.storemanagement.model.dto.ProductOrderData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,5 +19,9 @@ public class OrderInfoResponse extends OrderResponse {
     private static final long serialVersionUID = -7822160051790655597L;
 
     private List<ProductOrderResponse> products;
+
+    public OrderInfoResponse(OrderResponse orderResponse) {
+        super(orderResponse);
+    }
 
 }

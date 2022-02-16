@@ -24,6 +24,11 @@ import java.util.stream.Collectors;
 public record SchemeServiceImpl(SchemeRepository schemeRepository) implements SchemeService {
 
     @Override
+    public SchemeData getDefaultSchemeByType(int type) {
+        return schemeRepository.findByTypeAndDefaultItemIsTrue(type).convertToData();
+    }
+
+    @Override
     public PageResponse<SchemeData> getAllSchemes(Integer type, int page, int size, boolean enabled) {
         Pageable paging = PageRequest.of(page, size);
         Page<Scheme> pageScheme;
@@ -31,7 +36,7 @@ public record SchemeServiceImpl(SchemeRepository schemeRepository) implements Sc
         List<String> errors = validateType(type);
 
         if (!errors.isEmpty()) {
-            throw  new InputValidationException(errors);
+            throw new InputValidationException(errors);
         }
 
         if (enabled) {
@@ -74,51 +79,67 @@ public record SchemeServiceImpl(SchemeRepository schemeRepository) implements Sc
 
     @Override
     public SchemeData createScheme(SchemeData newScheme) {
-
+        newScheme.setId(0);
         List<String> errors = validateType(newScheme.getType());
-
+        Scheme defaultScheme = null;
         if (!errors.isEmpty()) {
-            throw  new InputValidationException(errors);
+            throw new InputValidationException(errors);
         }
-
+        if (newScheme.isDefaultItem()) {
+            defaultScheme = schemeRepository.findByTypeAndDefaultItemIsTrue(newScheme.getType());
+        }
         Scheme scheme = schemeRepository.save(newScheme.convertToEntity());
+        if (defaultScheme != null) {
+            defaultScheme.setDefaultItem(false);
+            schemeRepository.save(defaultScheme);
+        }
         newScheme.setId(scheme.getId());
         return newScheme;
     }
-    
+
 
     @Override
     public SchemeData updateScheme(SchemeData updatedScheme, long schemeId) {
         Optional<Scheme> schemeOptional = schemeRepository.findById(schemeId);
 
+        Scheme defaultScheme = null;
         if (schemeOptional.isEmpty()) {
             throw new SchemeNotFoundException("Scheme not found, schemeId : " + schemeId);
         }
         Scheme scheme = schemeOptional.get();
-        List<String> errors = validateTypeUpdate(updatedScheme.getType(), scheme.getType());
-
+        List<String> errors = validateUpdate(updatedScheme, scheme);
         if (!errors.isEmpty()) {
-            throw  new InputValidationException(errors);
+            throw new InputValidationException(errors);
+        }
+        if (updatedScheme.isDefaultItem()) {
+            defaultScheme = schemeRepository.findByTypeAndDefaultItemIsTrue(updatedScheme.getType());
         }
         updateEntity(scheme, updatedScheme);
         Scheme savedScheme = schemeRepository.save(scheme);
+        if (defaultScheme != null) {
+            defaultScheme.setDefaultItem(false);
+            schemeRepository.save(defaultScheme);
+        }
         return savedScheme.convertToData();
 
+    }
+
+    private List<String> validateUpdate(SchemeData updatedScheme, Scheme scheme) {
+        List<String> errors = new ArrayList<>();
+        if (updatedScheme.getType() != scheme.getType()) {
+            errors.add("Scheme Type cannot be updated");
+        }
+        if (scheme.isDefaultItem() && !updatedScheme.isDefaultItem()) {
+            errors.add("You can't update default value, at least one default item");
+        }
+        return errors;
     }
 
     private void updateEntity(Scheme scheme, SchemeData updatedScheme) {
         scheme.setStatus(updatedScheme.isStatus());
         scheme.setName(updatedScheme.getName());
         scheme.setDescription(updatedScheme.getDescription());
-    }
-
-    private List<String> validateTypeUpdate(int newType, int oldType) {
-
-        List<String> errors = new ArrayList<>();
-        if (newType != oldType) {
-            errors.add("Scheme Type cannot be updated");
-        }
-        return errors;
+        scheme.setDefaultItem(updatedScheme.isDefaultItem());
     }
 
 

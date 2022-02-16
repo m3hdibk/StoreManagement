@@ -28,10 +28,13 @@ public class StockHistoryInformationResponse implements Serializable {
 
     private List<StockHistoryLocationResponse> stockHistoryPerLocation;
 
-    public void build(List<StockHistoryData> stockHistoryDataList) {
+    private int sumQuantity;
+
+    public void build(List<StockHistoryData> stockHistoryDataList, int sumQuantity) {
         if (stockHistoryDataList.isEmpty()) {
             return;
         }
+        this.sumQuantity = sumQuantity;
         product = stockHistoryDataList.get(0).getStock().getProduct();
         Map<SchemeData , List<StockHistoryData>> groupByLocation = stockHistoryDataList.stream()
                 .collect(Collectors.groupingBy(stockHistoryData -> stockHistoryData.getStock().getLocation()));

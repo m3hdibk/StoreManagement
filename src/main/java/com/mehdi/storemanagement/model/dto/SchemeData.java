@@ -29,6 +29,8 @@ public class SchemeData implements Serializable {
     private String name;
     private String description;
     private boolean status;
+    private boolean defaultItem;
+
 
 
     public Scheme convertToEntity() {
@@ -38,6 +40,7 @@ public class SchemeData implements Serializable {
         scheme.setName(name);
         scheme.setDescription(description);
         scheme.setStatus(status);
+        scheme.setDefaultItem(defaultItem);
         return scheme;
     }
 }

@@ -40,9 +40,9 @@ public record OrderServiceImpl(OrderRepository orderRepository, ProductRepositor
     public void createOrder(OrderRequest orderRequest) {
         Order order = new Order();
         List<ProductOrder> productOrderList = new ArrayList<>();
-        Client client = new Client();
-        client.setId(orderRequest.getClientId());
-        order.setClient(client);
+        User user = new User();
+        user.setId(orderRequest.getClientId());
+        order.setUser(user);
         LocalDate currentDate = LocalDate.now();
         LocalTime currentTime = LocalTime.now();
 
@@ -57,7 +57,7 @@ public record OrderServiceImpl(OrderRepository orderRepository, ProductRepositor
                 throw new NoEnoughQuantityException("No enough quantity in the Stock");
             }
             ProductData productData = stockData.getProduct();
-            totalAmount += productData.getSellPrice() * (productData.getVat().getAmount() / 100 + 1) *
+            totalAmount += ((productData.getSellPrice() - productOrder.getDiscount()) * (productData.getVat().getAmount() / 100 + 1)) *
                     productOrder.getQuantity();
             stockData.setQuantity(stockData.getQuantity() - productOrder.getQuantity());
             StockHistoryData stockHistory = new StockHistoryData();

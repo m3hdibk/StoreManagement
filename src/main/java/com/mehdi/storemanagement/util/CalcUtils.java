@@ -13,33 +13,43 @@ public final class CalcUtils {
 
         double sellPrice = productData.getSellPrice();
         double finalPrice = sellPrice;
+        boolean applyTaxes = productData.getTaxes() != null;
+        boolean applyVats = productData.getVat() != null;
         List<TaxData> taxes = productData.getTaxes();
         List<TaxData> taxesAfterVat = new ArrayList<>();
 
         // step 1 add taxes before vat
-        for (TaxData taxData : taxes) {
-            if (taxData.isBeforeVAT()) {
-                if (StockUtils.TaxAmountType.FIXED.getId() == taxData.getType()) {
+        if (applyTaxes) {
+            for (TaxData taxData : taxes) {
+                if (taxData.isBeforeVAT()) {
+                    if (StockUtils.TaxAmountType.FIXED.getId() == taxData.getType()) {
+                        finalPrice += taxData.getAmount();
+                    } else {
+                        finalPrice += taxData.getAmount() * sellPrice;
+                    }
+                } else {
+                    taxesAfterVat.add(taxData);
+                }
+            }
+        }
+
+        // step 2 add VAT
+        if (applyVats) {
+            finalPrice *= productData.getVat().getAmount() /100 + 1;
+        }
+
+        // step 3 add taxes after VAT
+
+        if (applyTaxes) {
+            for (TaxData taxData : taxesAfterVat) {
+                if (StockUtils.TaxAmountType.FIXED.getId() == taxData.getAmountType()) {
                     finalPrice += taxData.getAmount();
                 } else {
                     finalPrice += taxData.getAmount() * sellPrice;
                 }
-            } else {
-                taxesAfterVat.add(taxData);
             }
         }
-        // step 2 add VAT
-        finalPrice += finalPrice * productData.getVat().getAmount();
 
-        // step 3 add taxes after VAT
-
-        for (TaxData taxData : taxesAfterVat) {
-            if (StockUtils.TaxAmountType.FIXED.getId() == taxData.getAmountType()) {
-                finalPrice += taxData.getAmount();
-            } else {
-                finalPrice += taxData.getAmount() * sellPrice;
-            }
-        }
 
         return finalPrice;
 

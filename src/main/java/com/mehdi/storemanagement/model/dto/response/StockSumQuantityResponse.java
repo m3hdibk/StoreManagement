@@ -15,6 +15,7 @@ public class StockSumQuantityResponse implements Serializable {
     @Serial
     private static final long serialVersionUID = -7587874200558506308L;
 
-    private ProductResponse productData;
+    private long id;
+    private ProductResponse product;
     private int sumQuantity;
 }
